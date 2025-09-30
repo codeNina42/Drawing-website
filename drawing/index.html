@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drawing Website</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #222;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      margin: 10px;
+    }
+
+    #toolbar {
+      margin: 10px;
+    }
+
+    #toolbar input {
+      margin: 0 5px;
+    }
+
+    canvas {
+      border: 2px solid #fff;
+      border-radius: 8px;
+      cursor: crosshair;
+      background: #fff;
+    }
+
+    button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      background: #ff4444;
+      color: white;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    button:hover {
+      background: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Drawing Website</h1>
+  
+  <div id="toolbar">
+    <label>Color: <input type="color" id="color" value="#000000"></label>
+    <label>Size: <input type="number" id="size" value="5" min="1" max="50"></label>
+    <button id="pen">Pen</button>
+    <button id="eraser">Eraser</button>
+    <button id="clear">Clear</button>
+  </div>
+  
+  <canvas id="canvas" width="800" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("color");
+    const sizePicker = document.getElementById("size");
+    const clearBtn = document.getElementById("clear");
+    const eraserBtn = document.getElementById("eraser");
+    const penBtn = document.getElementById("pen");
+
+    let painting = false;
+    let currentColor = colorPicker.value;
+
+    function startPosition(e) {
+      painting = true;
+      draw(e); 
+    }
+
+    function endPosition() {
+      painting = false;
+      ctx.beginPath(); 
+    }
+
+    function draw(e) {
+      if (!painting) return;
+      ctx.lineWidth = sizePicker.value;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = currentColor;
+
+      ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+
+    // Event listeners
+    canvas.addEventListener("mousedown", startPosition);
+    canvas.addEventListener("mouseup", endPosition);
+    canvas.addEventListener("mousemove", draw);
+
+    colorPicker.addEventListener("change", (e) => {
+      currentColor = e.target.value;
+    });
+
+    clearBtn.addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    eraserBtn.addEventListener("click", () => {
+      currentColor = "#ffffff"; // white color for eraser
+    });
+
+    penBtn.addEventListener("click", () => {
+      currentColor = colorPicker.value; // switch back to brush color
+    });
+  </script>
+</body>
+</html>
